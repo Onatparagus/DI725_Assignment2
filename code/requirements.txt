@@ -1,0 +1,8 @@
+torch>=1.10
+torchvision
+transformers
+matplotlib
+opencv-python
+pycocotools
+wandb
+tqdm
