@@ -60,10 +60,12 @@ def train():
     processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
     model = DetrForObjectDetection.from_pretrained(
         "facebook/detr-resnet-50",
-        num_labels=8  # Human, Car, Truck, Van, Motorbike, Bicycle, Bus, Trailer
+        num_labels=8,  # Human, Car, Truck, Van, Motorbike, Bicycle, Bus, Trailer
+        ignore_mismatched_sizes=True
     )
+    print(model.class_labels_classifier)
 
-    train_dataset = CocoDataset("dataset/images", "dataset/annotations.json", processor)
+    train_dataset = CocoDataset("dataset/images", "coco_annotations/auair_coco.json", processor)
     train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, collate_fn=collate_fn)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
