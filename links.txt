@@ -1,0 +1,3 @@
+Github: https://github.com/Onatparagus/DI725_Assignment2
+
+Wandb: https://wandb.ai/onatzk-metu-middle-east-technical-university/auair-object-detection

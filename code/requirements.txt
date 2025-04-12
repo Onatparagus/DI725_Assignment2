@@ -6,3 +6,4 @@ opencv-python
 pycocotools
 wandb
 tqdm
+timm
