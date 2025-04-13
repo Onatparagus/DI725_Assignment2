@@ -60,7 +60,8 @@ def train():
 
             wandb.log({"loss": loss.item()})
             loop.set_postfix(loss=loss.item())
-
+        model.save_pretrained(f"detr_auair_epoch_{epoch}")
+        
     torch.save(model.state_dict(), "detr_auair.pth")
     wandb.finish()
     
