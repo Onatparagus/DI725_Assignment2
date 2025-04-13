@@ -21,33 +21,6 @@ class CocoDataset(CocoDetection):
         pixel_values = encoding["pixel_values"].squeeze()
         target = encoding["labels"][0]
         return pixel_values, target
-        
-def generate_predictions(model, processor, dataset, output_path):
-    model.eval()
-    preds = []
-    with torch.no_grad():
-        for idx in tqdm(range(len(dataset))):
-            pixel_values, _ = dataset[idx]
-            pixel_values = pixel_values.unsqueeze(0).to(device)
-
-            outputs = model(pixel_values=pixel_values)
-            results = processor.post_process_object_detection(outputs, target_sizes=[(1080, 1920)], threshold=0.5)[0]
-
-            for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
-                x_min, y_min, x_max, y_max = box.tolist()
-                width = x_max - x_min
-                height = y_max - y_min
-
-                preds.append({
-                    "image_id": idx,
-                    "category_id": label.item(),
-                    "bbox": [x_min, y_min, width, height],
-                    "score": score.item()
-                })
-
-    with open(output_path, "w") as f:
-        json.dump(preds, f)
-    print(f"Saved predictions to {output_path}")
 
 def collate_fn(batch):
     pixel_values = torch.stack([b[0] for b in batch])
@@ -90,7 +63,9 @@ def train():
 
     torch.save(model.state_dict(), "detr_auair.pth")
     wandb.finish()
-    generate_predictions(model, processor, train_dataset, "predictions.json")
+    
+    model.save_pretrained("detr_auair_model")
+    processor.save_pretrained("detr_auair_processor")
 
 if __name__ == "__main__":
     train()
