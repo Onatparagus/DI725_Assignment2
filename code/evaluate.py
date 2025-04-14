@@ -1,6 +1,7 @@
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-import json
+import json 
+from tqdm import tqdm
 from transformers import DetrForObjectDetection, DetrImageProcessor
 from torch.utils.data import DataLoader
 from torchvision.datasets import CocoDetection
@@ -19,11 +20,6 @@ class CocoDataset(CocoDetection):
         pixel_values = encoding["pixel_values"].squeeze()
         target = encoding["labels"][0]
         return pixel_values, target
-
-def collate_fn(batch):
-    pixel_values = torch.stack([b[0] for b in batch])
-    labels = [b[1] for b in batch]
-    return {"pixel_values": pixel_values, "labels": labels}
     
 def generate_predictions(model, processor, dataset, output_path, device):
     model.eval()
@@ -68,9 +64,8 @@ if __name__ == "__main__":
     processor = DetrImageProcessor.from_pretrained("detr_auair_processor")
 
     train_dataset = CocoDataset("dataset/images", "coco_annotations/auair_coco.json", processor)
-    train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, collate_fn=collate_fn)
 
     # Run predictions
-    generate_predictions(model, processor, dataset, "predictions.json", device)
+    generate_predictions(model, processor, train_dataset, "predictions.json", device)
 
     run_eval("coco_annotations/auair_coco.json", "predictions.json")
